@@ -1,5 +1,7 @@
 # Event Loop Interview Prep
 
+![JavaScript Event Loop](./images/event-loop.png)
+
 ---
 
 ## 📘 Key Notes
@@ -462,21 +464,6 @@ Promise.resolve().then(() => {
 console.log(6);
 ```
 
----
-
-## 🎯 Real Interview Questions (MNC)
-
-1. **Google**: "Explain why `Promise.resolve().then()` executes before `setTimeout(fn, 0)`?"
-2. **Meta**: "What is the difference between `process.nextTick` and `Promise.then` in Node.js?"
-3. **Amazon**: "What phases exist in the Node.js event loop? Which phase handles `setImmediate`?"
-4. **Microsoft**: "How can abuse of `process.nextTick` starve the event loop?"
-5. **Uber**: Given nested Promises + `setTimeout`, predict exact output order.
-6. **Netflix**: "What’s the difference between `queueMicrotask` and `Promise.resolve().then()` in browsers?"
-7. **LinkedIn**: "Why can `setTimeout(fn, 0)` sometimes run after a longer delay than expected?"
-8. **Amazon**: Write code to show difference in output between Node.js and Browser for the same async snippet.
-
----
-
 ## ✅ Answers
 
 ### Practice Answers
@@ -713,8 +700,24 @@ B
 ```
 1
 6
+```
 
-### MNC Interview Answers
+
+---
+
+## 🎯 Real Interview Questions (MNC)
+
+1. **Google**: "Explain why `Promise.resolve().then()` executes before `setTimeout(fn, 0)`?"
+2. **Meta**: "What is the difference between `process.nextTick` and `Promise.then` in Node.js?"
+3. **Amazon**: "What phases exist in the Node.js event loop? Which phase handles `setImmediate`?"
+4. **Microsoft**: "How can abuse of `process.nextTick` starve the event loop?"
+5. **Uber**: Given nested Promises + `setTimeout`, predict exact output order.
+6. **Netflix**: "What’s the difference between `queueMicrotask` and `Promise.resolve().then()` in browsers?"
+7. **LinkedIn**: "Why can `setTimeout(fn, 0)` sometimes run after a longer delay than expected?"
+8. **Amazon**: Write code to show difference in output between Node.js and Browser for the same async snippet.
+
+
+### Answers
 
 1. **Google** → Because `Promise.then` goes into the **microtask queue**, which always drains before macrotasks like `setTimeout`.
 2. **Meta** → In Node.js, `process.nextTick` runs **before** Promise microtasks. Order: nextTick > Promise microtasks.
