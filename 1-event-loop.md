@@ -1,24 +1,42 @@
 # Event Loop Interview Prep 🤭
 
-![JavaScript Event Loop](./images/event-loop.png)
-
 ---
   ## Watch 👀
 
 [![Video](https://img.youtube.com/vi/eiC58R16hb8/maxresdefault.jpg)](https://www.youtube.com/watch?v=eiC58R16hb8)
 [https://www.youtube.com/watch?v=eiC58R16hb8](https://www.youtube.com/watch?v=eiC58R16hb8)
 
+
 [![Video](https://img.youtube.com/vi/okkHnAo8GmE/maxresdefault.jpg)](https://www.youtube.com/watch?v=okkHnAo8GmE)
 [https://www.youtube.com/watch?v=okkHnAo8GmE](https://www.youtube.com/watch?v=okkHnAo8GmE)
 
 ---
 
+
 ## 📘 Key Notes
 
-### Event Loop Basics
+
+![JavaScript Event Loop](https://private-user-images.githubusercontent.com/72389198/483875188-35530236-2faa-4308-b0fd-d27cdb57e26d.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTY1NTUyMTIsIm5iZiI6MTc1NjU1NDkxMiwicGF0aCI6Ii83MjM4OTE5OC80ODM4NzUxODgtMzU1MzAyMzYtMmZhYS00MzA4LWIwZmQtZDI3Y2RiNTdlMjZkLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA4MzAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwODMwVDExNTUxMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWI3MDkzMzM0NTk1YjMxMTY0YTVkZGQzMmIwOTczOWY0ZTUyOWQ0M2I4NmRhY2E2NTdkYTU1YTBiZDFlZDViZDAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.D1nnlwxwxYHeiS6tD3HOxzHcERsSHA46O_-3m_ZW1vE)
+
+### JavaScript Runtime Overview
+
+- The **JavaScript runtime** consists of:
+  - **Heap** → memory allocation for objects/variables.
+  - **Call Stack** → executes synchronous code line by line.
+  - **Web APIs** (in browsers) → async features provided by the browser, e.g., `setTimeout`, `fetch`, `DOM events`, `localStorage`, `indexedDB`.
+  - **Event Loop** → constantly checks whether the call stack is empty, then pushes tasks from the queues.
+  - **Task Queue (Macrotask Queue)** → holds callbacks from timers, I/O, and events.
+  - **Microtask Queue** → holds Promises and microtasks, always processed before the task queue.
+
+### Event Loop
 - JS is single-threaded → uses **call stack + event loop** to manage async code.
-- **Call stack**: runs synchronous code line by line.
-- **Queues**: hold async callbacks until stack is free.
+
+- The **Event Loop** is a mechanism that coordinates the execution of synchronous and asynchronous code in JavaScript. It:
+
+  1. Runs synchronous code line by line on the call stack.
+  2. Processes all **microtasks** before moving on.
+  3. Moves to the next **macrotask**.
+- Keeps repeating → ensuring JS feels asynchronous despite being single-threaded.
 
 ### Types of Queues
 - **Microtask Queue**
@@ -28,15 +46,22 @@
   - `setTimeout`, `setInterval`, `setImmediate` (Node), I/O callbacks.
   - Runs **after all microtasks are cleared**.
 
-### Order of Execution
+### Web APIs (Browser)
+- **Timers** → `setTimeout`, `setInterval` → go to **macrotask queue**.
+- **Promises** → `.then`, `.catch`, `.finally` → go to **microtask queue**.
+- **fetch / XMLHttpRequest** → once resolved, callbacks → **macrotask queue** (but their `.then` results → **microtask queue**).
+- **DOM events** → like `click`, `keydown` → event callbacks go to **macrotask queue**.
+- **MutationObserver** → microtask.
+
+### Order of Execution (Priority)
 1. Sync code → call stack.
 2. `process.nextTick` (Node only).
-3. Microtasks (Promises, `queueMicrotask`).
-4. Macrotasks (Timers → setTimeout, setInterval).
+3. Microtask queue (Promises, `queueMicrotask`).
+4. Macrotask queue (timers, `setImmediate`, I/O).
 5. `setImmediate` (Node → check phase).
 
 ### Node.js vs Browser
-- **Browser**: microtasks (Promises, queueMicrotask) → then macrotasks (setTimeout).
+- **Browser**: microtasks (Promises, `queueMicrotask`) → then macrotasks (setTimeout).
 - **Node.js**:
   - `process.nextTick` runs **before** Promise microtasks.
   - Event loop phases: timers → pending → idle → poll → check (setImmediate) → close.
@@ -44,9 +69,14 @@
 
 ### Common Traps
 - Promises inside Promises create **nested microtasks**.
-- Microtasks can queue more microtasks (chained `.then`).
-- In Node.js, `process.nextTick` can starve the event loop if abused.
 - Inside a macrotask (like `setTimeout`), microtasks still run **before the next macrotask**.
+- Microtasks can queue more microtasks (chained `.then`) → all must finish before macrotasks run.
+- In Node.js, `process.nextTick` can starve the event loop if called recursively.
+
+- **Prevention**: Node internally uses a safeguard (`maxTickDepth`) to stop infinite recursion of nextTicks. Best practice is to prefer Promises or setImmediate when possible.
+- `setTimeout(fn, 0)` is not immediate → minimum delay enforced by browser (\~4ms).
+- Heavy synchronous loops block the event loop → causes UI freeze in browsers and request stalls in Node.
+- Starving microtasks (e.g., chaining Promises endlessly) can delay macrotasks.
 
 ---
 
@@ -747,3 +777,4 @@ setImmediate(() => console.log('immediate'));
 * In **Browser**: only `setTimeout` exists, no `setImmediate`.
 
 ---
+###### Last Updated: 2025-08-30
