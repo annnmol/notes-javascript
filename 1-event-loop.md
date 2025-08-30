@@ -1,6 +1,13 @@
-# Event Loop Interview Prep
+# Event Loop Interview Prep 🤭
 
 ![JavaScript Event Loop](./images/event-loop.png)
+
+---
+  ## Watch ⏯️
+
+[![Video](https://img.youtube.com/vi/eiC58R16hb8/maxresdefault.jpg)](https://www.youtube.com/watch?v=eiC58R16hb8)
+
+[![Video](https://img.youtube.com/vi/okkHnAo8GmE/maxresdefault.jpg)](https://www.youtube.com/watch?v=okkHnAo8GmE)
 
 ---
 
