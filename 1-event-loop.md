@@ -776,5 +776,6 @@ setImmediate(() => console.log('immediate'));
 * In **Node.js after I/O**: `immediate` before `timeout`.
 * In **Browser**: only `setTimeout` exists, no `setImmediate`.
 
+
 ---
 ###### Last Updated: 2025-08-30
